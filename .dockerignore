@@ -1,0 +1,17 @@
+# Repository & editors
+.git
+.github
+.vscode
+.idea
+
+# Local artifacts
+node_modules
+.next
+out
+coverage
+*.log
+
+# Root docs
+README.md
+LICENSE
+docker-compose*.yml
