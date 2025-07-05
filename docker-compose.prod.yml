@@ -1,12 +1,35 @@
+# docker-compose.prod.yml
+# Production deployment: minimal, robust, secrets handled outside the image
 services:
   front:
-    image: mushroom-bet-app:latest
+    # In CI you’ll push a version-tagged image to a registry.
+    # Locally you can still build via `docker compose --build`.
+    image: mushroom-bet-app:${TAG:-latest}
     build:
       context: .
       dockerfile: Dockerfile
-      target: runner
-    ports:
-      - "3000:3000"
+      target: runner # Build only the final stage
+    container_name: mushroom_bet_front
     restart: always
+    ports:
+      - '3000:3000'
+
+    # Keep secrets/environment variables out of the Dockerfile layers
+    env_file:
+      - .env.prod
     environment:
-      - NODE_ENV=production
+      NODE_ENV: 'production'
+
+    # Simple HTTP health-check every minute
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'bun',
+          'eval',
+          "const r = await fetch('http://localhost:3000'); Bun.exit(r.ok ? 0 : 1)",
+        ]
+      interval: 1m
+      timeout: 5s
+      retries: 5
+      start_period: 15s

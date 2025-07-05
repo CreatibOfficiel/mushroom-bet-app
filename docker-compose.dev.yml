@@ -1,14 +1,38 @@
+# docker-compose.dev.yml
+# Local development: live-reload, volume mounts, fast feedback loop
 services:
   front:
     build:
       context: .
       dockerfile: Dockerfile
-      target: dev
-    volumes:
-      - .:/app
-      - /app/node_modules
-      - /app/.next
+      target: dev # Use the dev stage with hot-reload
+    image: mushroom-bet-app:dev
+    container_name: mushroom_bet_front
+    restart: unless-stopped
     ports:
-      - "3000:3000"
+      - '3000:3000'
+
+    # Two-way bind mount so code edits trigger instant reloads
+    volumes:
+      - .:/app # Project source
+      - /app/node_modules # Keep container’s node_modules isolated
+      - /app/.next # Persist Next.js cache for faster rebuilds
+
+    env_file:
+      - .env.dev
     environment:
-      - NODE_ENV=development
+      NODE_ENV: development
+
+    # Faster, more frequent health-checks while hacking
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'bun',
+          'eval',
+          "const r = await fetch('http://localhost:3000'); Bun.exit(r.ok ? 0 : 1)",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s

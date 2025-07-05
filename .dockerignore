@@ -1,17 +1,7 @@
-# Repository & editors
 .git
-.github
-.vscode
-.idea
-
-# Local artifacts
-node_modules
 .next
-out
-coverage
+node_modules
 *.log
-
-# Root docs
-README.md
-LICENSE
+*.lock
+Dockerfile
 docker-compose*.yml
