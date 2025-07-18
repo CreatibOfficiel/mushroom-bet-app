@@ -10,11 +10,11 @@ export const playerSchema = z.object({
 
 export type Player = z.infer<typeof playerSchema>;
 
-// Alias pour compatibilité avec le code existant
+// Alias for compatibility with existing code
 export const userSchema = playerSchema;
 export type User = Player;
 
-// Interface TypeScript classique pour compatibilité
+// Interface TypeScript for compatibility
 export interface IPlayer {
   id: string;
   email: string;

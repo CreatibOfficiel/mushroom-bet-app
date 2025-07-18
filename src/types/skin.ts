@@ -9,7 +9,7 @@ export const skinSchema = z.object({
 
 export type Skin = z.infer<typeof skinSchema>;
 
-// Interface TypeScript classique pour compatibilité
+// Interface TypeScript for compatibility
 export interface ISkin {
   id: number;
   name: string;
