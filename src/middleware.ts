@@ -11,7 +11,7 @@ export async function middleware(request: NextRequest) {
   const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
 
   if (isProtectedRoute) {
-    const accessToken = request.cookies.get('accessToken');
+    const accessToken = request.cookies.get('access_token');
 
     if (!accessToken) {
       // Redirect to login page if not authenticated
@@ -23,9 +23,9 @@ export async function middleware(request: NextRequest) {
     // Optionally, you can add token validation here by calling your backend
     // For now, we'll assume the presence of a token means authenticated.
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/validate-token`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/me`, {
         headers: {
-          'Authorization': `Bearer ${accessToken.value}`,
+          Authorization: `Bearer ${accessToken.value}`,
         },
       });
 

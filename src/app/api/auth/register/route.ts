@@ -6,7 +6,7 @@ export async function POST(request: Request) {
   try {
     // In a real application, you would call your backend registration API here.
     // For now, we'll simulate a successful registration.
-    const backendResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/register`, {
+    const backendResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -16,7 +16,10 @@ export async function POST(request: Request) {
 
     if (!backendResponse.ok) {
       const errorData = await backendResponse.json();
-      return NextResponse.json({ message: errorData.message || 'Registration failed' }, { status: backendResponse.status });
+      return NextResponse.json(
+        { message: errorData.message || 'Registration failed' },
+        { status: backendResponse.status },
+      );
     }
 
     return NextResponse.json({ message: 'Registration successful' });
