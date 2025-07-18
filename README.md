@@ -1,36 +1,130 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Mushroom Bet App
+
+A Next.js 14 application with user authentication that connects to an external NestJS API.
+
+## Features
+
+- **User Registration & Login** with email/password
+- **Client-side authentication** using React Context
+- **HTTP-Only cookies** for secure token storage
+- **Protected routes** with middleware
+- **Form validation** with Zod schemas
+- **Error handling** with toast notifications
+- **Responsive UI** with Tailwind CSS and shadcn/ui components
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18+ or Bun
+- A NestJS API running on `http://localhost:3001/api/v1`
+
+### Environment Setup
+
+1. Copy the environment example file:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cp .env.example .env.local
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Update the environment variables:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+NEXT_PUBLIC_API_BASE_URL=http://localhost:3001/api/v1
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Development
 
-## Learn More
+1. Install dependencies:
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+bun install
+# or
+npm install
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+2. Start the development server:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+bun dev
+# or
+npm run dev
+```
 
-## Deploy on Vercel
+3. Start your NestJS backend (in a separate terminal/repo):
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+# In your backend repository
+npm start
+# or
+bun start
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+4. Open [http://localhost:3000](http://localhost:3000) to see the application.
+
+### Available Routes
+
+- `/` - Home page
+- `/login` - User login form
+- `/register` - User registration form
+- `/me`, `/races/*`, `/bets/*` - Protected routes (require authentication)
+
+### Testing
+
+Run the test suite:
+
+```bash
+bun test
+# or
+npm test
+```
+
+Run tests with UI:
+
+```bash
+bun test:ui
+# or
+npm run test:ui
+```
+
+### API Integration
+
+This frontend expects your NestJS backend to provide the following endpoints:
+
+- `POST /auth/login` - User authentication
+- `POST /auth/register` - User registration
+- `POST /auth/logout` - User logout
+- `GET /auth/me` - Get current user profile
+
+The backend should:
+
+- Set HTTP-Only cookies named `access_token`
+- Use `SameSite=Lax; Secure=false` in development
+- Return user objects with: `id`, `email`, `displayName`, `character`
+
+### Technology Stack
+
+- **Framework:** Next.js 14 (App Router)
+- **Styling:** Tailwind CSS + shadcn/ui
+- **State Management:** React Context
+- **Validation:** Zod
+- **Testing:** Vitest + React Testing Library
+- **Notifications:** Sonner (toast)
+
+## Project Structure
+
+```
+src/
+├── app/                 # Next.js App Router pages
+│   ├── api/auth/       # API routes (proxy to backend)
+│   ├── login/          # Login page
+│   ├── register/       # Registration page
+│   └── layout.tsx      # Root layout with providers
+├── components/ui/      # shadcn/ui components
+├── lib/
+│   ├── auth.ts         # Authentication context & logic
+│   └── utils.ts        # Utility functions
+├── types/
+│   └── user.ts         # User type definitions with Zod
+└── middleware.ts       # Route protection middleware
+```
