@@ -53,7 +53,7 @@ export enum Character {
   LAKITU = 'LAKITU',
 }
 
-// Schema Zod pour valider l'enum Character
-export const characterSchema = z.nativeEnum(Character);
+// Schema Zod to validate the Character enum
+export const characterSchema = z.enum(Object.values(Character) as [Character, ...Character[]]);
 
 export type CharacterType = z.infer<typeof characterSchema>;
