@@ -1,16 +1,23 @@
-"use client";
+'use client';
 
-import { useState } from "react";
+import { Suspense, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { useAuth } from "@/lib/auth";
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { useAuth } from '@/lib/auth';
 
-export default function LoginPage() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+function LoginForm() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const { login } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -23,7 +30,7 @@ export default function LoginPage() {
       router.push(redirect);
     } else {
       // Handle login error, e.g., show a toast or error message
-      console.error("Login failed");
+      console.error('Login failed');
     }
   };
 
@@ -44,7 +51,7 @@ export default function LoginPage() {
                 placeholder="m@example.com"
                 required
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={e => setEmail(e.target.value)}
               />
             </div>
             <div className="grid gap-2">
@@ -54,7 +61,7 @@ export default function LoginPage() {
                 type="password"
                 required
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={e => setPassword(e.target.value)}
               />
             </div>
             <Button type="submit" className="w-full">
@@ -63,9 +70,20 @@ export default function LoginPage() {
           </form>
         </CardContent>
         <CardFooter className="text-sm text-center">
-          Don't have an account? <a href="/register" className="underline">Register</a>
+          Don&apos;t have an account?{' '}
+          <a href="/register" className="underline">
+            Register
+          </a>
         </CardFooter>
       </Card>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <LoginForm />
+    </Suspense>
   );
 }
