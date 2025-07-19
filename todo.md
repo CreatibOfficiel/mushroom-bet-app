@@ -13,7 +13,7 @@ can talk to an external NestJS API running at http://localhost:3001.
 
 2. API calls
    - Base URL is **process.env.NEXT_PUBLIC_API_BASE_URL**  
-     (in dev this will be `http://localhost:3001/api/v1`).
+     (in dev this will be `http://localhost:3001/api`).
    - Use **fetch** with `credentials: 'include'` so cookies sent by the API
      are stored automatically.
 

@@ -17,20 +17,20 @@ A Next.js 14 application with user authentication that connects to an external N
 ### Prerequisites
 
 - Node.js 18+ or Bun
-- A NestJS API running on `http://localhost:3001/api/v1`
+- A NestJS API running on `http://localhost:3001/api`
 
 ### Environment Setup
 
 1. Copy the environment example file:
 
 ```bash
-cp .env.example .env.local
+cp .env.example .env.dev
 ```
 
 2. Update the environment variables:
 
 ```bash
-NEXT_PUBLIC_API_BASE_URL=http://localhost:3001/api/v1
+NEXT_PUBLIC_API_BASE_URL=http://localhost:3001/api
 ```
 
 ### Development
