@@ -70,7 +70,7 @@ function LoginForm() {
           </form>
         </CardContent>
         <CardFooter className="text-sm text-center">
-          Don&apos;t have an account?{' '}
+          Don&apos;t have an account?&nbsp;
           <a href="/register" className="underline">
             Register
           </a>

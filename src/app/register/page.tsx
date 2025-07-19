@@ -1,24 +1,31 @@
-"use client";
+'use client';
 
-import { useState } from "react";
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { useAuth } from "@/lib/auth";
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { useAuth } from '@/lib/auth';
 
 export default function RegisterPage() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const { register } = useAuth();
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (password !== confirmPassword) {
-      alert("Passwords do not match!");
+      alert('Passwords do not match!');
       return;
     }
     const success = await register(email, password);
@@ -26,7 +33,7 @@ export default function RegisterPage() {
       router.push('/login');
     } else {
       // Handle registration error
-      console.error("Registration failed");
+      console.error('Registration failed');
     }
   };
 
@@ -47,7 +54,7 @@ export default function RegisterPage() {
                 placeholder="m@example.com"
                 required
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={e => setEmail(e.target.value)}
               />
             </div>
             <div className="grid gap-2">
@@ -57,7 +64,7 @@ export default function RegisterPage() {
                 type="password"
                 required
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={e => setPassword(e.target.value)}
               />
             </div>
             <div className="grid gap-2">
@@ -67,7 +74,7 @@ export default function RegisterPage() {
                 type="password"
                 required
                 value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
+                onChange={e => setConfirmPassword(e.target.value)}
               />
             </div>
             <Button type="submit" className="w-full">
@@ -76,7 +83,10 @@ export default function RegisterPage() {
           </form>
         </CardContent>
         <CardFooter className="text-sm text-center">
-          Already have an account? <a href="/login" className="underline">Login</a>
+          Already have an account?&nbsp;
+          <a href="/login" className="underline">
+            Login
+          </a>
         </CardFooter>
       </Card>
     </div>
