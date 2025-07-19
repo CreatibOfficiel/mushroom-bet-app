@@ -11,24 +11,68 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<boolean>;
   register: (email: string, password: string) => Promise<boolean>;
   logout: () => Promise<void>;
+  makeAuthenticatedRequest: (url: string, options?: RequestInit) => Promise<Response>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3001/api/';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3001/api';
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
 
+  // Helper function to make authenticated requests with automatic token refresh
+  const makeAuthenticatedRequest = async (
+    url: string,
+    options: RequestInit = {},
+  ): Promise<Response> => {
+    // First attempt
+    let response = await fetch(url, {
+      ...options,
+      credentials: 'include',
+    });
+
+    // If 401 (token expired), try to refresh
+    if (response.status === 401) {
+      try {
+        const refreshResponse = await fetch(`${API_BASE_URL}/auth/refresh`, {
+          method: 'POST',
+          credentials: 'include',
+        });
+
+        if (refreshResponse.ok) {
+          // Refresh successful, retry the original request
+          response = await fetch(url, {
+            ...options,
+            credentials: 'include',
+          });
+        } else {
+          // Refresh failed, user needs to login again
+          setUser(null);
+          setIsAuthenticated(false);
+          toast.error('Session expired. Please login again.');
+          throw new Error('Session expired');
+        }
+      } catch (refreshError) {
+        // Refresh request failed
+        console.error('Token refresh failed:', refreshError);
+        setUser(null);
+        setIsAuthenticated(false);
+        toast.error('Session expired. Please login again.');
+        throw new Error('Session expired');
+      }
+    }
+
+    return response;
+  };
+
   useEffect(() => {
     const checkAuthStatus = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`${API_BASE_URL}/auth/me`, {
-          credentials: 'include',
-        });
+        const response = await makeAuthenticatedRequest(`${API_BASE_URL}/auth/me`);
 
         if (response.ok) {
           const data = await response.json();
@@ -65,6 +109,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (response.ok) {
         const data = await response.json();
+        console.log('Login response data:', data);
         const validatedUser = userSchema.parse(data.user);
         setUser(validatedUser);
         setIsAuthenticated(true);
@@ -77,6 +122,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     } catch (error) {
       console.error('Login failed:', error);
+      if (error instanceof Error) {
+        console.error('Error details:', error.message);
+      }
       toast.error('Login failed');
       return false;
     } finally {
@@ -115,9 +163,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = async () => {
     try {
-      await fetch(`${API_BASE_URL}/auth/logout`, {
+      await makeAuthenticatedRequest(`${API_BASE_URL}/auth/logout`, {
         method: 'POST',
-        credentials: 'include',
       });
     } catch (error) {
       console.error('Logout request failed:', error);
@@ -135,6 +182,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     login,
     register,
     logout,
+    makeAuthenticatedRequest, // Export this for other components to use
   };
 
   return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;
@@ -147,3 +195,29 @@ export function useAuth() {
   }
   return context;
 }
+
+/**
+ * Helper hook to make authenticated API calls with automatic token refresh
+ *
+ * Usage example:
+ * ```tsx
+ * const { makeAuthenticatedRequest } = useAuth();
+ *
+ * const fetchRaces = async () => {
+ *   try {
+ *     const response = await makeAuthenticatedRequest(`${API_BASE_URL}/races`);
+ *     if (response.ok) {
+ *       const races = await response.json();
+ *       setRaces(races);
+ *     }
+ *   } catch (error) {
+ *     // Token refresh failed, user redirected to login
+ *     console.error('Failed to fetch races:', error);
+ *   }
+ * };
+ * ```
+ */
+export const useAuthenticatedRequest = () => {
+  const { makeAuthenticatedRequest } = useAuth();
+  return makeAuthenticatedRequest;
+};
