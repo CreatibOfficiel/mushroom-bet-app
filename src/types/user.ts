@@ -5,7 +5,7 @@ export const playerSchema = z.object({
   id: z.string(),
   email: z.string().email(),
   displayName: z.string().nullable(),
-  skin: skinSchema.nullable(),
+  skin: skinSchema.nullable().optional(),
 });
 
 export type Player = z.infer<typeof playerSchema>;
